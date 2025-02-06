@@ -28,8 +28,12 @@ def download_video_ytdlp(url, save_path='output', resolution='1080', cutoff_time
             'key': 'FFmpegThumbnailsConvertor',
             'format': 'jpg',
         }],
+        'cookiefile': f'{save_path}/cookies.txt',
     }
 
+    if(not os.path.exists(ydl_opts['cookiefile'])):
+        print("No cookies.txt found, need creating one...")
+        return
     # Update yt-dlp to avoid download failure due to API changes
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp"])
