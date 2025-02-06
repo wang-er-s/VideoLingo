@@ -32,7 +32,7 @@ def download_video_ytdlp(url, save_path='output', resolution='1080', cutoff_time
     }
 
     if(not os.path.exists(ydl_opts['cookiefile'])):
-        print("No cookies.txt found, need creating one...")
+        print(f"No cookies.txt found, need creating one, and put it in {ydl_opts['cookiefile']}")
         return
     # Update yt-dlp to avoid download failure due to API changes
     try:
