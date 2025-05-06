@@ -1,10 +1,10 @@
-import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
 import itertools
-import os,sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from load_nlp_model import init_nlp
-from rich import print
+import os
+import warnings
+from core.utils import *
+from core.spacy_utils.load_nlp_model import init_nlp, SPLIT_BY_COMMA_FILE, SPLIT_BY_MARK_FILE
+
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 def is_valid_phrase(phrase):
     # 🔍 Check for subject and verb
@@ -36,23 +36,17 @@ def split_by_comma(text, nlp):
         if token.text == "," or token.text == "，":
             suitable_for_splitting = analyze_comma(start, doc, token)
             
-            if suitable_for_splitting :
+            if suitable_for_splitting:
                 sentences.append(doc[start:token.i].text.strip())
-                print(f"[yellow]✂️  Split at comma: {doc[start:token.i][-4:]},| {doc[token.i + 1:][:4]}[/yellow]")
+                rprint(f"[yellow]✂️  Split at comma: {doc[start:token.i][-4:]},| {doc[token.i + 1:][:4]}[/yellow]")
                 start = token.i + 1
-    
-    for i, token in enumerate(doc):
-        if token.text == ":": # Split at colon
-            sentences.append(doc[start:token.i].text.strip())
-            print(f"[yellow]✂️  Split at colon: {doc[start:token.i][-4:]}:| {doc[token.i + 1:][:4]}[/yellow]")
-                
     
     sentences.append(doc[start:].text.strip())
     return sentences
 
 def split_by_comma_main(nlp):
 
-    with open("output/log/sentence_by_mark.txt", "r", encoding="utf-8") as input_file:
+    with open(SPLIT_BY_MARK_FILE, "r", encoding="utf-8") as input_file:
         sentences = input_file.readlines()
 
     all_split_sentences = []
@@ -60,14 +54,14 @@ def split_by_comma_main(nlp):
         split_sentences = split_by_comma(sentence.strip(), nlp)
         all_split_sentences.extend(split_sentences)
 
-    with open("output/log/sentence_by_comma.txt", "w", encoding="utf-8") as output_file:
+    with open(SPLIT_BY_COMMA_FILE, "w", encoding="utf-8") as output_file:
         for sentence in all_split_sentences:
             output_file.write(sentence + "\n")
     
     # delete the original file
-    os.remove("output/log/sentence_by_mark.txt")
+    os.remove(SPLIT_BY_MARK_FILE)
     
-    print("[green]💾 Sentences split by commas saved to →  `sentences_by_comma.txt`[/green]")
+    rprint(f"[green]💾 Sentences split by commas saved to →  `{SPLIT_BY_COMMA_FILE}`[/green]")
 
 if __name__ == "__main__":
     nlp = init_nlp()
